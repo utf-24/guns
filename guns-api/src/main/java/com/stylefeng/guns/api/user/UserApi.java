@@ -1,5 +1,5 @@
 package com.stylefeng.guns.api.user;
 
-public interface Login {
+public interface UserApi {
     boolean ifLogin(String username, String password);
 }
