@@ -11,6 +11,6 @@ public class Client {
     private UserApi userApi;
 
     public void run(){
-        userApi.ifLogin("young","11");
+        userApi.login("young","11");
     }
 }
