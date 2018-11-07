@@ -2,7 +2,9 @@ package com.stylefeng.guns.rest.modular.user;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.stylefeng.guns.api.user.UserApi;
+import com.stylefeng.guns.api.user.vo.UserInfoModel;
 import com.stylefeng.guns.api.user.vo.UserModel;
+import com.stylefeng.guns.rest.common.CurrentUser;
 import com.stylefeng.guns.rest.modular.vo.ResponseVO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,8 +40,8 @@ public class UserController {
     @RequestMapping(value = "check",method = RequestMethod.POST)
     public ResponseVO check(String userName){
         if(null!=userName &&userName.trim().length()>0){
-            boolean notExists = userApi.checkUsername(userName);
-            if(notExists){
+            boolean Exists = userApi.checkUsername(userName);
+            if(!Exists){
                 return ResponseVO.success("用户名不存在");
             }else {
                 return ResponseVO.serviceFail("用户名已存在");
@@ -65,6 +67,46 @@ public class UserController {
 
 
         return ResponseVO.success("用户退出成功");
+    }
+    @RequestMapping(value="getUserInfo",method = RequestMethod.GET)
+    public ResponseVO getUserInfo(){
+        // 获取当前登陆用户
+        String userId = CurrentUser.getCurrentUser();
+        if(userId != null && userId.trim().length()>0){
+            // 将用户ID传入后端进行查询
+            int uuid = Integer.parseInt(userId);
+            UserInfoModel userInfo = userApi.getUserInfo(uuid);
+            if(userInfo!=null){
+                return ResponseVO.success(userInfo);
+            }else{
+                return ResponseVO.appFail("用户信息查询失败");
+            }
+        }else{
+            return ResponseVO.serviceFail("用户未登陆");
+        }
+    }
+
+    @RequestMapping(value="updateUserInfo",method = RequestMethod.POST)
+    public ResponseVO updateUserInfo(UserInfoModel userInfoModel){
+        // 获取当前登陆用户
+        String userId = CurrentUser.getCurrentUser();
+        if(userId != null && userId.trim().length()>0){
+            // 将用户ID传入后端进行查询
+            int uuid = Integer.parseInt(userId);
+            // 判断当前登陆人员的ID与修改的结果ID是否一致
+            if(uuid != userInfoModel.getUuid()){
+                return ResponseVO.serviceFail("请修改您个人的信息");
+            }
+
+            UserInfoModel userInfo = userApi.updateUserInfo(userInfoModel);
+            if(userInfo!=null){
+                return ResponseVO.success(userInfo);
+            }else{
+                return ResponseVO.appFail("用户信息修改失败");
+            }
+        }else{
+            return ResponseVO.serviceFail("用户未登陆");
+        }
     }
 
 }
