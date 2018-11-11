@@ -1,5 +1,8 @@
-package com.stylefeng.guns.rest.film.vo;
+package com.stylefeng.guns.api.film.vo;
 
+import lombok.Data;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +10,8 @@ import java.util.List;
  * @description
  * @date 2018/11/11 14:12
  **/
-public class FilmVO {
+@Data
+public class FilmVO implements Serializable{
     private int fileNum;
     private List<FilmInfo> filmInfos;
 }
