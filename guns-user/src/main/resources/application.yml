@@ -36,7 +36,7 @@ spring:
       name: dubbo
       port: 20881
   datasource:
-      url : jdbc:mysql://123.206.74.27:3306/guns_rest?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
+      url : jdbc:mysql://39.96.0.182:3306/guns_rest?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
       username: root
       password: Yy_199584@
       filters: log4j,wall,mergeStat
