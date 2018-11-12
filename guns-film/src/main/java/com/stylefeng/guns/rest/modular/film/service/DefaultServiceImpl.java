@@ -77,17 +77,39 @@ public class DefaultServiceImpl implements FilmServiceApi {
 
     @Override
     public List<FilmInfo> getBoxRanking() {
-        return null;
+        //条件-》正在上映的票房前十名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status","1");
+
+        Page<MoocFilmT> page = new Page<>(1,10,"film_box_office");
+        List<MoocFilmT> filmInfos = moocFilmTMapper.selectPage(page,entityWrapper);
+        return getFilmInfos(filmInfos);
     }
 
     @Override
-    public List<FilmInfo> getExpectRanking() {
-        return null;
+    public List<FilmInfo> getExpectRanking()
+    {
+        //条件-》获取即将上映的前十名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status",2);
+
+        Page<MoocFilmT> page = new Page<>(1,10,"film_preSaleNum");
+        List<MoocFilmT> moocFilmTS = moocFilmTMapper.selectPage(page,entityWrapper);
+
+        return getFilmInfos(moocFilmTS);
     }
 
     @Override
-    public List<FilmInfo> getTop() {
-        return null;
+    public List<FilmInfo> getTop()
+    {
+        //条件-》正在上映的评分前十名
+        EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("film_status","1");
+
+        Page<MoocFilmT> page = new Page<>(1,10,"film_score");
+        List<MoocFilmT> moocFilmTS = moocFilmTMapper.selectPage(page,entityWrapper);
+
+        return getFilmInfos(moocFilmTS);
     }
 
     private List<FilmInfo> getFilmInfos(List<MoocFilmT> moocFilms){
