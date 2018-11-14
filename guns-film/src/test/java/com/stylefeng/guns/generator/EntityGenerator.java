@@ -57,7 +57,8 @@ public class EntityGenerator {
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
         //strategy.setTablePrefix(new String[]{"_"});// 此处可以修改为您的表前缀
-        strategy.setInclude(new String[]{"mooc_banner_t","mooc_cat_dict_t","mooc_area_dict_t","mooc_year_dict_t","mooc_film_t","mooc_film_info_t","mooc_actor_t"});
+//        strategy.setInclude(new String[]{"mooc_banner_t","mooc_cat_dict_t","mooc_area_dict_t","mooc_year_dict_t","mooc_film_t","mooc_film_info_t","mooc_actor_t"});
+        strategy.setInclude(new String[]{"mooc_source_dict_t"});
         strategy.setNaming(NamingStrategy.underline_to_camel);// 表名生成策略
         mpg.setStrategy(strategy);
 

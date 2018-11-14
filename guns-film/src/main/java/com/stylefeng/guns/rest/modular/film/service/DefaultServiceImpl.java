@@ -4,14 +4,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.stylefeng.guns.api.film.FilmServiceApi;
-import com.stylefeng.guns.api.film.vo.BannerVO;
-import com.stylefeng.guns.api.film.vo.FilmInfo;
-import com.stylefeng.guns.api.film.vo.FilmVO;
+import com.stylefeng.guns.api.film.vo.*;
 import com.stylefeng.guns.core.util.DateUtil;
-import com.stylefeng.guns.rest.common.persistence.dao.MoocBannerTMapper;
-import com.stylefeng.guns.rest.common.persistence.dao.MoocFilmTMapper;
-import com.stylefeng.guns.rest.common.persistence.model.MoocBannerT;
-import com.stylefeng.guns.rest.common.persistence.model.MoocFilmT;
+import com.stylefeng.guns.rest.common.persistence.dao.*;
+import com.stylefeng.guns.rest.common.persistence.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +27,15 @@ public class DefaultServiceImpl implements FilmServiceApi {
 
     @Autowired
     MoocFilmTMapper moocFilmTMapper;
+
+    @Autowired
+    MoocCatDictTMapper moocCatDictTMapper;
+
+    @Autowired
+    MoocYearDictTMapper moocYearDictTMapper;
+
+    @Autowired
+    MoocSourceDictTMapper moocSourceDictTMapper;
 
     @Override
     public List<BannerVO> getBanners() {
@@ -110,6 +115,52 @@ public class DefaultServiceImpl implements FilmServiceApi {
         List<MoocFilmT> moocFilmTS = moocFilmTMapper.selectPage(page,entityWrapper);
 
         return getFilmInfos(moocFilmTS);
+    }
+
+    @Override
+    public List<CatVO> getCats() {
+        List<CatVO> cats = new ArrayList<>();
+        //查询分类实体
+        List<MoocCatDictT> moocCatDictTS = moocCatDictTMapper.selectList(null);
+
+        for (MoocCatDictT moocCatDictT:moocCatDictTS){
+            CatVO catVO = new CatVO();
+            catVO.setCatName(moocCatDictT.getShowName());
+            catVO.setCatId(moocCatDictT.getUuid()+"");
+
+            cats.add(catVO);
+        }
+        return cats;
+    }
+
+    @Override
+    public List<SourceVO> getSources() {
+        List<SourceVO> sourceVOList = new ArrayList<>();
+        List<MoocSourceDictT> moocSourceDictTS = moocSourceDictTMapper.selectList(null);
+
+        for (MoocSourceDictT moocSourceDictT:moocSourceDictTS){
+            SourceVO sourceVO = new SourceVO();
+            sourceVO.setSourceId(moocSourceDictT.getUuid()+"");
+            sourceVO.setSourceName(moocSourceDictT.getShowName());
+
+            sourceVOList.add(sourceVO);
+        }
+        return sourceVOList;
+    }
+
+    @Override
+    public List<YearVO> getYears() {
+        List<YearVO> yearVOList = new ArrayList<>();
+        List<MoocYearDictT> moocYearDictTS = moocYearDictTMapper.selectList(null);
+
+        for(MoocYearDictT moocYearDictT: moocYearDictTS){
+            YearVO yearVO = new YearVO();
+            yearVO.setYearId(moocYearDictT.getUuid()+"");
+            yearVO.setYearName(moocYearDictT.getShowName());
+
+            yearVOList.add(yearVO);
+        }
+        return yearVOList;
     }
 
     private List<FilmInfo> getFilmInfos(List<MoocFilmT> moocFilms){
