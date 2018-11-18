@@ -17,6 +17,9 @@ public class ResponseVO<M> {
     private M data;
     //首页图片
     private String pre_img;
+    // 分页使用
+    private int nowPage;
+    private int totalPage;
 
 
     private ResponseVO(){}
@@ -46,6 +49,17 @@ public class ResponseVO<M> {
 
         return responseVO;
     }
+
+    public static<M> ResponseVO success(int nowPage,int totalPage,String imgPre,M m){
+        ResponseVO responseVO = new ResponseVO();
+        responseVO.setStatus(0);
+        responseVO.setData(m);
+        responseVO.setPre_img(imgPre);
+        responseVO.setTotalPage(totalPage);
+        responseVO.setNowPage(nowPage);
+        return responseVO;
+    }
+
 
     public static<M> ResponseVO serviceFail(String msg){
         ResponseVO responseVO = new ResponseVO();

@@ -2,13 +2,9 @@ package com.stylefeng.guns.rest.modular.film;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.stylefeng.guns.api.film.FilmServiceApi;
-import com.stylefeng.guns.api.film.vo.BannerVO;
-import com.stylefeng.guns.api.film.vo.CatVO;
-import com.stylefeng.guns.api.film.vo.SourceVO;
-import com.stylefeng.guns.api.film.vo.YearVO;
+import com.stylefeng.guns.api.film.vo.*;
 import com.stylefeng.guns.rest.modular.film.vo.FilmIndexVo;
 import com.stylefeng.guns.rest.modular.vo.ResponseVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +33,7 @@ public class FilmController {
         filmIndexVo.setBanners(filmServiceApi.getBanners());
 
         //获取热映电影
-        filmIndexVo.setHotFilms(filmServiceApi.getHotFilms(true,8));
+        filmIndexVo.setHotFilms(filmServiceApi.getHotFilms(new FilmSearchVO()));
         //获取即将上映的电影
         filmIndexVo.setExpectRanking(filmServiceApi.getExpectRanking());
 
@@ -150,5 +146,35 @@ public class FilmController {
 
         return ResponseVO.success(filmConditionVO);
 
+    }
+    @RequestMapping(value = "/getFilms" ,method = RequestMethod.GET)
+    public ResponseVO getFilms(FilmSearchVO filmRequestVO){
+
+        String img_pre = "http://img.meetingshop.cn/";
+
+        FilmVO filmVO = null;
+        // 根据showType判断影片查询类型
+        switch (filmRequestVO.getShowType()){
+            case 1 :
+                filmVO = filmServiceApi.getHotFilms(filmRequestVO);
+                break;
+            case 2 :
+                filmVO = filmServiceApi.getSoonFilms(filmRequestVO);
+                break;
+            case 3 :
+                filmVO = filmServiceApi.getClassicFilms(filmRequestVO);
+
+                break;
+            default:
+                filmVO = filmServiceApi.getHotFilms(filmRequestVO);
+                break;
+        }
+        // 根据sortId排序
+        // 添加各种条件查询
+        // 判断当前是第几页
+
+        return ResponseVO.success(
+                filmVO.getNowPage(),filmVO.getTotalPage(),
+                img_pre,filmVO.getFilmInfos());
     }
 }

@@ -51,33 +51,82 @@ public class DefaultServiceImpl implements FilmServiceApi {
         }
         return result;
     }
-
-    @Override
-    public FilmVO getHotFilms(boolean isLimit, int nums) {
+    //影片状态,1-正在热映，2-即将上映，3-经典影片
+    public  FilmVO searchFilmByStatus(int film_status,FilmSearchVO filmSearchVO){
         List<FilmInfo> filmInfos = new ArrayList<>();
         FilmVO filmVO = new FilmVO();
 
         EntityWrapper<MoocFilmT> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("film_status",1);
+        //过滤条件 1->正在热映
+        entityWrapper.eq("film_status",film_status);
 
         //根据isLimit判断是否是首页，限制条数
-        if(isLimit){
+        if(filmSearchVO.isLimit()){
             // 如果是，则限制条数、限制内容为热映影片
-            Page<MoocFilmT> page = new Page<>(1,nums);
+            Page<MoocFilmT> page = new Page<>(1,filmSearchVO.getPageSize());
             List<MoocFilmT> moocFilmTS = moocFilmTMapper.selectPage(page,entityWrapper);
             filmInfos = getFilmInfos(moocFilmTS);
             filmVO.setFileNum(moocFilmTS.size());
             filmVO.setFilmInfos(filmInfos);
         }else {
             // 如果不是，则是列表页，同样需要限制内容为热映影片
+            Page<MoocFilmT> page = null;
+            //根据sortId的不同封装不同的page对象
+            // 1-按热门搜索，2-按时间搜索，3-按评价搜索
+            switch (filmSearchVO.getSortId()){
+                case 1:
+                    page = new Page<>(filmSearchVO.getNowPage(),filmSearchVO.getPageSize(),"film_box_office");
+                    break;
+                case 2 :
+                    page = new Page<>(filmSearchVO.getNowPage(),filmSearchVO.getPageSize(),"film_time");
+                    break;
+                case 3 :
+                    page = new Page<>(filmSearchVO.getNowPage(),filmSearchVO.getPageSize(),"film_score");
+                    break;
+                default:
+                    page = new Page<>(filmSearchVO.getNowPage(),filmSearchVO.getPageSize(),"film_box_office");
+                    break;
+            }
+            // 如果sourceId,yearId,catId 不为99 ,则表示要按照对应的编号进行查询
 
+            if(!(filmSearchVO.getSourceId() ==99)){
+                entityWrapper.eq("film_source",filmSearchVO.getSourceId());
+            }
+            if(!(filmSearchVO.getYearId()==99)){
+                entityWrapper.eq("film_date",filmSearchVO.getYearId());
+            }
+            if(!(filmSearchVO.getCatId() ==99)){
+                entityWrapper.eq("film_cats",filmSearchVO.getCatId());
+            }
+
+            List<MoocFilmT> moocFilmTS = moocFilmTMapper.selectPage(page,entityWrapper);
+            filmInfos = getFilmInfos(moocFilmTS);
+            filmVO.setFilmInfos(filmInfos);
+            filmVO.setFileNum(filmInfos.size());
+            int totalNum = moocFilmTMapper.selectCount(entityWrapper);
+            int totalPage = (totalNum/filmSearchVO.getPageSize())+1;
+            filmVO.setNowPage(filmSearchVO.getNowPage());
+            filmVO.setTotalPage(totalPage);
         }
-        return null;
+
+        return filmVO;
+    }
+    @Override
+    public FilmVO getHotFilms(FilmSearchVO filmSearchVO) {
+        FilmVO filmVO = searchFilmByStatus(1,filmSearchVO);
+        return filmVO;
     }
 
     @Override
-    public FilmVO getSoonFilms(boolean isLimit, int nums) {
-        return null;
+    public FilmVO getSoonFilms(FilmSearchVO filmSearchVO) {
+        FilmVO filmVO = searchFilmByStatus(2,filmSearchVO);
+        return filmVO;
+    }
+
+    @Override
+    public FilmVO getClassicFilms(FilmSearchVO filmSearchVO) {
+        FilmVO filmVO = searchFilmByStatus(3,filmSearchVO);
+        return filmVO;
     }
 
     @Override
