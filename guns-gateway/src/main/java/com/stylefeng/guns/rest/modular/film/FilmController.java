@@ -5,10 +5,7 @@ import com.stylefeng.guns.api.film.FilmServiceApi;
 import com.stylefeng.guns.api.film.vo.*;
 import com.stylefeng.guns.rest.modular.film.vo.FilmIndexVo;
 import com.stylefeng.guns.rest.modular.vo.ResponseVO;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +144,7 @@ public class FilmController {
         return ResponseVO.success(filmConditionVO);
 
     }
-    @RequestMapping(value = "/getFilms" ,method = RequestMethod.GET)
+    @RequestMapping(value = "getFilms" ,method = RequestMethod.GET)
     public ResponseVO getFilms(FilmSearchVO filmRequestVO){
 
         String img_pre = "http://img.meetingshop.cn/";
@@ -176,5 +173,12 @@ public class FilmController {
         return ResponseVO.success(
                 filmVO.getNowPage(),filmVO.getTotalPage(),
                 img_pre,filmVO.getFilmInfos());
+    }
+    @RequestMapping(value = "films/{searchParam}",method = RequestMethod.GET)
+    public ResponseVO films(@PathVariable("searchParam")String searchParam, int searchType){
+
+        // 根据searchType，判断查询类型
+        FilmDetailVO filmDetail = filmServiceApi.getFilmDetail(searchType, searchParam);
+        return null;
     }
 }

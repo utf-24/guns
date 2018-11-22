@@ -2,13 +2,15 @@ package com.stylefeng.guns.api.film.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author young
  * @description 影片查询参数
  * @date 2018/11/19 1:12
  **/
 @Data
-public class FilmSearchVO {
+public class FilmSearchVO implements Serializable {
     private Integer showType=1;
     private Integer sortId=1;
     private Integer sourceId=99;
