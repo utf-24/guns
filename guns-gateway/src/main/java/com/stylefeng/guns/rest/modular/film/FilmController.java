@@ -179,6 +179,35 @@ public class FilmController {
 
         // 根据searchType，判断查询类型
         FilmDetailVO filmDetail = filmServiceApi.getFilmDetail(searchType, searchParam);
-        return null;
+
+        String filmId = filmDetail.getFilmId();
+
+        //获取影片描述信息
+        FilmDescVO filmDescVO = filmServiceApi.getFilmDesc(filmId);
+
+        //获取图片信息
+        ImgVO imgVO = filmServiceApi.getImgs(filmId);
+
+        //获取导演信息
+        ActorVO director = filmServiceApi.getDectInfo(filmId);
+
+        //获取演员信息
+        List<ActorVO> actors = filmServiceApi.getActors(filmId);
+
+        //info04
+        InfoRequstVO infoRequstVO = new InfoRequstVO();
+
+        ActorRequestVO actorRequestVO = new ActorRequestVO();
+        actorRequestVO.setActors(actors);
+        actorRequestVO.setDirector(director);
+
+        infoRequstVO.setActors(actorRequestVO);
+        infoRequstVO.setBiography(filmDescVO.getBiography());
+        infoRequstVO.setImgVO(imgVO);
+        infoRequstVO.setFilmId(filmId);
+
+        filmDetail.setInfo04(infoRequstVO);
+
+        return ResponseVO.success("ss",filmDetail);
     }
 }

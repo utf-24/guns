@@ -19,4 +19,131 @@
         <result column="film_status" property="filmStatus" />
     </resultMap>
 
+    <select id="getFilmDetailByName" parameterType="java.lang.String" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
+        SELECT
+            film.uuid AS filmId,
+            film.film_name AS filmName,
+            filmInfo.film_en_name AS filmEnName,
+            film.img_address AS imgAddress,
+            film.film_score AS score,
+            filmInfo.film_score_num AS scoreNum,
+            film.film_box_office AS totalBox,
+            (
+                SELECT
+                    GROUP_CONCAT(show_name SEPARATOR ',')
+                FROM
+                    mooc_cat_dict_t t
+                WHERE
+                    FIND_IN_SET(
+                        t.UUID,
+                        (
+                            SELECT
+                                REPLACE (
+                                    TRIM(BOTH '#' FROM film_cats),
+                                    '#',
+                                    ','
+                                )
+                            FROM
+                                mooc_film_t t
+                            WHERE
+                                t.UUID = film.UUID
+                        )
+                    )
+            ) AS info01,
+            CONCAT(
+                (
+                    SELECT
+                        t.show_name
+                    FROM
+                        mooc_cat_dict_t t
+                    WHERE
+                        film.UUID = t.UUID
+                ),
+                '/',
+                filmInfo.film_length
+            ) AS info02,
+            CONCAT(
+                film.film_time,
+                ' ',
+                (
+                    SELECT
+                        source.show_name
+                    FROM
+                        mooc_source_dict_t source
+                    WHERE
+                        film.UUID = source.UUID
+                ),
+                '上映'
+            ) AS info03
+        FROM
+            mooc_film_t film,
+            mooc_film_info_t filmInfo
+        WHERE
+            film.UUID = filmInfo.film_id
+        AND film.film_name LIKE #{filmName}
+    </select>
+
+    <select id="getFilmDetailById" parameterType="java.lang.String" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
+        SELECT
+            film.uuid AS filmId,
+            film.film_name AS filmName,
+            filmInfo.film_en_name AS filmEnName,
+            film.img_address AS imgAddress,
+            film.film_score AS score,
+            filmInfo.film_score_num AS scoreNum,
+            film.film_box_office AS totalBox,
+            (
+                SELECT
+                    GROUP_CONCAT(show_name SEPARATOR ',')
+                FROM
+                    mooc_cat_dict_t t
+                WHERE
+                    FIND_IN_SET(
+                        t.UUID,
+                        (
+                            SELECT
+                                REPLACE (
+                                    TRIM(BOTH '#' FROM film_cats),
+                                    '#',
+                                    ','
+                                )
+                            FROM
+                                mooc_film_t t
+                            WHERE
+                                t.UUID = film.UUID
+                        )
+                    )
+            ) AS info01,
+            CONCAT(
+                (
+                    SELECT
+                        t.show_name
+                    FROM
+                        mooc_cat_dict_t t
+                    WHERE
+                        film.UUID = t.UUID
+                ),
+                '/',
+                filmInfo.film_length
+            ) AS info02,
+            CONCAT(
+                film.film_time,
+                ' ',
+                (
+                    SELECT
+                        source.show_name
+                    FROM
+                        mooc_source_dict_t source
+                    WHERE
+                        film.UUID = source.UUID
+                ),
+                '上映'
+            ) AS info03
+        FROM
+            mooc_film_t film,
+            mooc_film_info_t filmInfo
+        WHERE
+            film.UUID = filmInfo.film_id
+        AND film.UUID = #{uuid}
+    </select>
 </mapper>
