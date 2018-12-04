@@ -29,7 +29,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.jsonwebtoken</groupId>
+            <groupId>io.jsonwebtoken</groupId>a
             <artifactId>jjwt</artifactId>
         </dependency>
         <dependency>
